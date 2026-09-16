@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js Interview Questions & Answers | 100 Q&A with Syntax & Examples</title>
+<meta name="description" content="100 Node.js interview questions and answers covering core modules, event loop, streams, Express, security, and performance with syntax examples.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --bg-elev:#121821;
+    --bg-elev-2:#171f2b;
+    --border:#232d3b;
+    --text:#e6edf3;
+    --text-dim:#8b9bb0;
+    --text-faint:#5d6b7d;
+    --accent-teal:#2dd4bf;
+    --accent-cyan:#38bdf8;
+    --accent-violet:#a78bfa;
+    --accent-amber:#fbbf24;
+    --radius:10px;
+    --font-ui:'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --font-code:'JetBrains Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-ui);
+    line-height:1.6;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+
+  /* Header */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,15,20,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    padding:18px 24px;
+  }
+  .header-inner{
+    max-width:1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-badge{
+    width:36px; height:36px; border-radius:9px;
+    background:linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-code); font-weight:700; color:#031017; font-size:15px;
+  }
+  .brand-text h1{font-size:17px; font-weight:600; letter-spacing:-0.01em;}
+  .brand-text p{font-size:12px; color:var(--text-dim);}
+  .header-stats{display:flex; gap:18px; font-size:12px; color:var(--text-dim); font-family:var(--font-code);}
+  .header-stats strong{color:var(--accent-teal); font-weight:600;}
+
+  /* Search + filter bar */
+  .toolbar{
+    max-width:1100px; margin:0 auto; padding:20px 24px 0;
+  }
+  .search-wrap{position:relative; margin-bottom:14px;}
+  .search-wrap svg{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; stroke:var(--text-faint);
+  }
+  #searchInput{
+    width:100%;
+    background:var(--bg-elev);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    color:var(--text);
+    font-family:var(--font-ui);
+    font-size:14px;
+    padding:12px 14px 12px 40px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  #searchInput:focus{border-color:var(--accent-teal);}
+  #searchInput::placeholder{color:var(--text-faint);}
+
+  .filter-row{
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;
+  }
+  .pill{
+    background:var(--bg-elev);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:var(--font-ui);
+    font-size:12.5px;
+    font-weight:500;
+    padding:7px 13px;
+    border-radius:999px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .pill:hover{border-color:var(--accent-teal); color:var(--text);}
+  .pill.active{
+    background:linear-gradient(135deg, rgba(45,212,191,0.18), rgba(56,189,248,0.18));
+    border-color:var(--accent-teal);
+    color:var(--accent-teal);
+  }
+  .pill .count{opacity:.65; margin-left:4px; font-family:var(--font-code); font-size:11px;}
+
+  .meta-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 2px 4px;
+    font-size:12.5px; color:var(--text-faint);
+  }
+  .meta-row button{
+    background:none; border:none; color:var(--text-dim);
+    font-family:var(--font-ui); font-size:12.5px; cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+  }
+  .meta-row button:hover{color:var(--accent-cyan);}
+  .meta-row button svg{width:13px; height:13px;}
+
+  /* List */
+  main{max-width:1100px; margin:0 auto; padding:8px 24px 60px;}
+  #list{display:flex; flex-direction:column; gap:10px;}
+
+  .card{
+    background:var(--bg-elev);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    transition:border-color .15s ease;
+  }
+  .card:hover{border-color:#2c3949;}
+  .card-head{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:16px 16px;
+    cursor:pointer;
+  }
+  .q-index{
+    font-family:var(--font-code); font-size:11.5px; color:var(--text-faint);
+    background:var(--bg-elev-2); border-radius:5px; padding:3px 7px;
+    flex-shrink:0; margin-top:2px;
+  }
+  .q-main{flex:1; min-width:0;}
+  .q-cat{
+    font-family:var(--font-code); font-size:10.5px; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--accent-violet); margin-bottom:4px;
+  }
+  .q-text{font-size:14.5px; font-weight:500; color:var(--text);}
+  .q-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .bookmark-btn{
+    background:none; border:none; cursor:pointer; padding:4px;
+    color:var(--text-faint); transition:color .15s ease;
+  }
+  .bookmark-btn svg{width:17px; height:17px;}
+  .bookmark-btn.active{color:var(--accent-amber);}
+  .bookmark-btn.active svg{fill:var(--accent-amber);}
+  .chevron{
+    width:16px; height:16px; color:var(--text-faint);
+    transition:transform .2s ease; flex-shrink:0; margin-top:2px;
+  }
+  .card.open .chevron{transform:rotate(180deg);}
+
+  .card-body{
+    max-height:0; overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .card.open .card-body{max-height:2000px;}
+  .card-body-inner{
+    padding:0 16px 18px 16px;
+    border-top:1px solid var(--border);
+    margin-top:0;
+  }
+  .answer{
+    font-size:13.8px; color:var(--text-dim); line-height:1.7;
+    padding-top:14px; margin-bottom:14px;
+  }
+  .code-block{
+    background:#0a0e13;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+  }
+  .code-block pre{
+    font-family:var(--font-code);
+    font-size:12.8px;
+    color:#c9e8e2;
+    line-height:1.6;
+    white-space:pre;
+  }
+  .code-label{
+    font-family:var(--font-code); font-size:10px; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--text-faint); margin-bottom:8px;
+  }
+
+  .empty-state{
+    text-align:center; padding:60px 20px; color:var(--text-faint);
+  }
+  .empty-state svg{width:40px; height:40px; margin-bottom:12px; opacity:.4;}
+
+  footer{
+    max-width:1100px; margin:0 auto; padding:24px 24px 50px;
+    border-top:1px solid var(--border);
+    font-size:12.5px; color:var(--text-faint);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  footer a{color:var(--accent-cyan); text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  @media (max-width:640px){
+    .header-stats{display:none;}
+    .toolbar, main, footer{padding-left:16px; padding-right:16px;}
+    .q-text{font-size:13.8px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-badge">JS</div>
+      <div class="brand-text">
+        <h1>Node.js Interview Q&A</h1>
+        <p>100 questions &middot; syntax &amp; examples</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <span><strong id="totalCount">100</strong> questions</span>
+      <span><strong id="catCount">11</strong> categories</span>
+      <span><strong id="bookmarkCount">0</strong> saved</span>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="text" id="searchInput" placeholder="Search questions, answers, or code...">
+  </div>
+  <div class="filter-row" id="filterRow"></div>
+  <div class="meta-row">
+    <span id="resultCount">Showing 100 of 100</span>
+    <button id="bookmarkToggle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"></path></svg>
+      <span>Bookmarked only</span>
+    </button>
+  </div>
+</div>
+
+<main>
+  <div id="list"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <p>No questions match your search.</p>
+  </div>
+</main>
+
+<footer>
+  <span>Node.js Interview Prep &middot; Interview Prep Series by M S Khan</span>
+  <span>
+    <a href="https://github.com/sharfuddin1984" target="_blank" rel="noopener">GitHub</a> &middot;
+    <a href="https://linkedin.com/in/sharfuddinkhan" target="_blank" rel="noopener">LinkedIn</a>
+  </span>
+</footer>
+
+<script type="application/json" id="qdata">
+[{"category": "Basics & Runtime", "question": "What is Node.js?", "answer": "Node.js is a cross-platform, open-source JavaScript runtime built on Chrome's V8 engine. It executes JS outside the browser, uses an event-driven, non-blocking I/O model, and is well suited for scalable network applications.", "code": "console.log(process.version); // e.g. v20.11.0", "id": 1}, {"category": "Basics & Runtime", "question": "How does Node.js handle concurrency if it's single-threaded?", "answer": "The main JS thread is single-threaded, but Node offloads I/O (file, network, DNS, some crypto) to the libuv thread pool and OS async APIs. The event loop picks up completed callbacks, giving the appearance of concurrency without multi-threading your own code.", "code": "// libuv thread pool size (default 4)\nprocess.env.UV_THREADPOOL_SIZE = 8;", "id": 2}, {"category": "Basics & Runtime", "question": "What is the difference between Node.js and browser JavaScript?", "answer": "Node lacks the DOM/window/BOM globals and instead exposes modules like fs, http, and path. It uses CommonJS/ESM module systems, has process/global objects, and file/network access that browsers restrict for security.", "code": "// Node only\nconst fs = require('fs');\nfs.readFileSync('./file.txt', 'utf8');", "id": 3}, {"category": "Basics & Runtime", "question": "What is the global object in Node.js?", "answer": "In Node, the top-level global object is `global` (analogous to `window` in browsers). It holds globals like process, Buffer, setTimeout, and __dirname/__filename (per-module in CommonJS).", "code": "global.myVar = 42;\nconsole.log(globalThis.myVar); // 42 (globalThis works everywhere)", "id": 4}, {"category": "Basics & Runtime", "question": "What is REPL in Node.js?", "answer": "REPL (Read-Eval-Print-Loop) is an interactive shell that reads a JS expression, evaluates it, prints the result, and loops. Launched by running `node` with no file argument.", "code": "$ node\n> 2 + 2\n4\n> .exit", "id": 5}, {"category": "Basics & Runtime", "question": "What is the purpose of package.json?", "answer": "package.json is the manifest for a Node project: it declares name, version, dependencies, scripts, entry point (main), and metadata used by npm/yarn/pnpm for install and tooling.", "code": "{\n  \"name\": \"my-app\",\n  \"version\": \"1.0.0\",\n  \"main\": \"index.js\",\n  \"scripts\": { \"start\": \"node index.js\" },\n  \"dependencies\": { \"express\": \"^4.19.0\" }\n}", "id": 6}, {"category": "Basics & Runtime", "question": "What is the difference between process.nextTick() and setImmediate()?", "answer": "process.nextTick() queues a callback to run immediately after the current operation, before the event loop continues \u2014 it has its own micro-queue processed before I/O. setImmediate() queues a callback for the 'check' phase of the event loop, after I/O callbacks in that iteration.", "code": "process.nextTick(() => console.log('nextTick'));\nsetImmediate(() => console.log('immediate'));\nconsole.log('sync');\n// sync -> nextTick -> immediate", "id": 7}, {"category": "Basics & Runtime", "question": "What are Node.js global variables __dirname and __filename?", "answer": "__dirname gives the absolute path of the directory containing the current module; __filename gives the absolute path of the current module file itself. Both are CommonJS-only (not available in ESM without workarounds).", "code": "console.log(__dirname);  // /home/user/app\nconsole.log(__filename); // /home/user/app/index.js", "id": 8}, {"category": "Basics & Runtime", "question": "How do you get command-line arguments in Node.js?", "answer": "process.argv is an array where index 0 is the node binary path, index 1 is the script path, and remaining entries are user-supplied arguments.", "code": "// node app.js foo bar\nconsole.log(process.argv.slice(2)); // ['foo', 'bar']", "id": 9}, {"category": "Basics & Runtime", "question": "What is the difference between synchronous and asynchronous methods in Node's core modules?", "answer": "Sync methods (suffixed Sync, e.g. readFileSync) block the event loop until completion and return results directly, throwing on error. Async methods use callbacks or Promises, don't block, and are preferred in server code to keep the event loop free.", "code": "const fs = require('fs');\nfs.readFile('a.txt', 'utf8', (err, data) => {}); // non-blocking\nconst data = fs.readFileSync('a.txt', 'utf8');    // blocking", "id": 10}, {"category": "Modules & npm", "question": "What is the difference between CommonJS and ES Modules in Node.js?", "answer": "CommonJS uses require()/module.exports, resolves synchronously, and is Node's original module system. ES Modules use import/export, are statically analyzable, resolve asynchronously, and are enabled via .mjs files or \"type\": \"module\" in package.json.", "code": "// CommonJS\nconst path = require('path');\nmodule.exports = { foo: 1 };\n\n// ESM\nimport path from 'path';\nexport const foo = 1;", "id": 11}, {"category": "Modules & npm", "question": "How does the require() caching mechanism work?", "answer": "Node caches modules by resolved filename after the first require(). Subsequent requires of the same file return the cached exports object rather than re-executing the module, so shared state persists across requires within a process.", "code": "// counter.js\nlet count = 0;\nmodule.exports = { inc: () => ++count };\n\n// both requires share the same instance\nconst a = require('./counter');\nconst b = require('./counter');\na.inc(); // b.inc() continues from 1", "id": 12}, {"category": "Modules & npm", "question": "What is the difference between dependencies and devDependencies in package.json?", "answer": "dependencies are packages required at runtime in production (e.g. express). devDependencies are only needed during development/build/test (e.g. jest, eslint) and are typically excluded via `npm install --production` or `npm ci --omit=dev`.", "code": "{\n  \"dependencies\": { \"express\": \"^4.19.0\" },\n  \"devDependencies\": { \"jest\": \"^29.0.0\" }\n}", "id": 13}, {"category": "Modules & npm", "question": "What is package-lock.json used for?", "answer": "It locks the exact resolved version tree (including transitive dependencies) so installs are reproducible across machines/CI, regardless of semver ranges in package.json changing what would otherwise resolve.", "code": "$ npm ci  // installs strictly from package-lock.json, fails if out of sync", "id": 14}, {"category": "Modules & npm", "question": "What is the difference between npm install and npm ci?", "answer": "npm install resolves and may update package-lock.json, is more lenient, and can modify node_modules incrementally. npm ci deletes node_modules first and installs exactly what's in the lockfile \u2014 faster and reproducible, ideal for CI pipelines.", "code": "$ npm ci", "id": 15}, {"category": "Modules & npm", "question": "How do you create a custom Node.js module?", "answer": "Define exports on module.exports (or named exports on exports.x), then require it by relative path elsewhere in the project.", "code": "// math.js\nexports.add = (a, b) => a + b;\n\n// app.js\nconst { add } = require('./math');\nconsole.log(add(2, 3)); // 5", "id": 16}, {"category": "Modules & npm", "question": "What is npx and how does it differ from npm?", "answer": "npx executes a package's binary without requiring a global install \u2014 it runs from local node_modules/.bin if present, or downloads and runs a temporary copy otherwise. npm is the package manager for installing/publishing packages.", "code": "$ npx create-react-app my-app\n$ npx cowsay hello", "id": 17}, {"category": "Modules & npm", "question": "What is semantic versioning (semver) and how do ^ and ~ differ in package.json?", "answer": "Semver is MAJOR.MINOR.PATCH. `^1.2.3` allows updates that don't change the leftmost non-zero digit (so up to <2.0.0). `~1.2.3` allows only patch-level updates (up to <1.3.0), giving a tighter range.", "code": "\"express\": \"^4.19.0\"  // >=4.19.0 <5.0.0\n\"lodash\": \"~4.17.21\" // >=4.17.21 <4.18.0", "id": 18}, {"category": "Modules & npm", "question": "How does Node.js resolve module paths passed to require()?", "answer": "Core modules (like 'fs') resolve first. Relative/absolute paths ('./x', '/x') resolve directly against the filesystem, trying exact file, then with extensions (.js, .json, .node), then as a directory with index.js or package.json's \"main\". Bare specifiers ('express') are looked up in node_modules, walking up parent directories.", "code": "require('fs');        // core module\nrequire('./utils');   // relative file\nrequire('express');   // node_modules lookup", "id": 19}, {"category": "Modules & npm", "question": "What are peerDependencies in package.json?", "answer": "They declare a package the consumer's project must provide itself (commonly for plugins), avoiding duplicate/incompatible versions being bundled \u2014 e.g. a React component library listing react as a peer dependency rather than a direct one.", "code": "{\n  \"peerDependencies\": { \"react\": \">=18.0.0\" }\n}", "id": 20}, {"category": "Event Loop & Async", "question": "What is the Node.js Event Loop?", "answer": "The event loop is the mechanism that lets Node perform non-blocking I/O by offloading operations and processing their callbacks in distinct phases (timers, pending callbacks, idle/prepare, poll, check, close callbacks) once the current call stack is empty.", "code": "// Simplified phase order per tick:\n// timers -> pending -> poll -> check -> close callbacks", "id": 21}, {"category": "Event Loop & Async", "question": "What are the phases of the Node.js event loop?", "answer": "1) timers (setTimeout/setInterval callbacks), 2) pending callbacks (deferred I/O callbacks), 3) idle/prepare (internal), 4) poll (retrieve new I/O events, execute I/O callbacks), 5) check (setImmediate callbacks), 6) close callbacks (e.g. socket.on('close')).", "code": "setTimeout(() => console.log('timer'), 0);\nsetImmediate(() => console.log('check phase'));", "id": 22}, {"category": "Event Loop & Async", "question": "What is a callback function and what is 'callback hell'?", "answer": "A callback is a function passed as an argument to be invoked after an async operation completes. Callback hell refers to deeply nested callbacks that become hard to read/maintain, typically resolved using Promises or async/await.", "code": "// callback hell\ngetUser(id, (err, user) => {\n  getPosts(user.id, (err, posts) => {\n    getComments(posts[0].id, (err, comments) => {\n      // deeply nested\n    });\n  });\n});", "id": 23}, {"category": "Event Loop & Async", "question": "How do Promises work in Node.js?", "answer": "A Promise represents an eventual value from an async operation, with states pending, fulfilled, or rejected. .then()/.catch()/.finally() attach handlers; Promise.all/allSettled/race/any combine multiple promises.", "code": "const p = new Promise((resolve, reject) => {\n  setTimeout(() => resolve('done'), 100);\n});\np.then(result => console.log(result)).catch(err => console.error(err));", "id": 24}, {"category": "Event Loop & Async", "question": "How does async/await work under the hood?", "answer": "async/await is syntactic sugar over Promises. An async function always returns a Promise; await pauses execution of that function (without blocking the event loop) until the awaited Promise settles, then resumes with the resolved value or throws on rejection.", "code": "async function getData() {\n  try {\n    const res = await fetch('https://api.example.com');\n    const data = await res.json();\n    return data;\n  } catch (err) {\n    console.error(err);\n  }\n}", "id": 25}, {"category": "Event Loop & Async", "question": "What is the difference between microtasks and macrotasks in Node.js?", "answer": "Microtasks (Promise callbacks, process.nextTick) run immediately after the current operation and are fully drained before the event loop proceeds to the next phase. Macrotasks (setTimeout, setInterval, setImmediate, I/O) are scheduled into event loop phases and run one per phase iteration.", "code": "Promise.resolve().then(() => console.log('microtask'));\nsetTimeout(() => console.log('macrotask'), 0);\n// microtask runs first", "id": 26}, {"category": "Event Loop & Async", "question": "What is an EventEmitter in Node.js?", "answer": "EventEmitter (from the 'events' module) implements the observer pattern: objects emit named events that registered listener functions respond to. Core Node modules like http and streams extend EventEmitter.", "code": "const EventEmitter = require('events');\nconst emitter = new EventEmitter();\nemitter.on('greet', name => console.log(`Hello, ${name}`));\nemitter.emit('greet', 'World');", "id": 27}, {"category": "Event Loop & Async", "question": "How do you handle multiple asynchronous operations concurrently?", "answer": "Use Promise.all() to run operations in parallel and wait for all to resolve (rejects fast on first failure), or Promise.allSettled() to wait for all regardless of outcome.", "code": "const [users, posts] = await Promise.all([\n  fetchUsers(),\n  fetchPosts()\n]);", "id": 28}, {"category": "Event Loop & Async", "question": "What is the difference between Promise.all(), Promise.allSettled(), Promise.race(), and Promise.any()?", "answer": "all() rejects as soon as any promise rejects. allSettled() waits for every promise and returns each outcome (fulfilled/rejected). race() settles as soon as the first promise settles (fulfilled or rejected). any() resolves as soon as the first promise fulfills, rejecting only if all reject.", "code": "await Promise.race([fetchFast(), fetchSlow()]); // first to settle wins", "id": 29}, {"category": "Event Loop & Async", "question": "Why should you avoid blocking the event loop in Node.js?", "answer": "Node runs application code on a single thread; a long synchronous operation (heavy computation, large sync file reads, blocking loops) freezes that thread, so no other requests can be processed until it finishes \u2014 degrading throughput for all clients.", "code": "// BAD: blocks the event loop\nfor (let i = 0; i < 1e10; i++) {}\n\n// BETTER: offload to worker_threads or break into async chunks", "id": 30}, {"category": "Event Loop & Async", "question": "What are Worker Threads in Node.js and when should you use them?", "answer": "worker_threads allow running JS in parallel threads with separate V8 instances, useful for CPU-intensive tasks (image processing, heavy computation) that would otherwise block the event loop. They communicate via message passing, not shared memory (except SharedArrayBuffer).", "code": "const { Worker } = require('worker_threads');\nconst worker = new Worker('./heavy-task.js');\nworker.on('message', result => console.log(result));", "id": 31}, {"category": "Event Loop & Async", "question": "What is the difference between setTimeout(fn, 0) and setImmediate(fn)?", "answer": "Inside the main module, their order isn't guaranteed (depends on process performance). But inside an I/O cycle (e.g. a fs callback), setImmediate always fires before setTimeout(fn, 0) because the poll phase transitions to the check phase before looping back to timers.", "code": "fs.readFile(__filename, () => {\n  setTimeout(() => console.log('timeout'), 0);\n  setImmediate(() => console.log('immediate'));\n  // immediate always logs first here\n});", "id": 32}, {"category": "File System", "question": "How do you read a file asynchronously in Node.js?", "answer": "Use fs.readFile() (callback-based) or fs.promises.readFile() / fsPromises with async/await, specifying an encoding to get a string instead of a Buffer.", "code": "const fs = require('fs/promises');\nconst data = await fs.readFile('./file.txt', 'utf8');\nconsole.log(data);", "id": 33}, {"category": "File System", "question": "How do you write to a file in Node.js?", "answer": "fs.writeFile() creates or overwrites a file asynchronously; fs.appendFile() adds content to the end of an existing file without overwriting it.", "code": "const fs = require('fs/promises');\nawait fs.writeFile('out.txt', 'Hello World');\nawait fs.appendFile('out.txt', '\\nMore text');", "id": 34}, {"category": "File System", "question": "What is the difference between fs.readFile() and fs.createReadStream()?", "answer": "readFile() loads the entire file into memory before the callback fires \u2014 simple but memory-heavy for large files. createReadStream() reads data in chunks as a stream, letting you process large files with constant memory usage via 'data' events or piping.", "code": "const fs = require('fs');\nconst stream = fs.createReadStream('big.log', { encoding: 'utf8' });\nstream.on('data', chunk => process.stdout.write(chunk));", "id": 35}, {"category": "File System", "question": "How do you check if a file exists in Node.js?", "answer": "Prefer fs.access() (or fs.promises.access) with a try/catch, or fs.existsSync() for a quick synchronous check. fs.exists() is deprecated due to race conditions.", "code": "const fs = require('fs/promises');\ntry {\n  await fs.access('./config.json');\n  console.log('exists');\n} catch {\n  console.log('missing');\n}", "id": 36}, {"category": "File System", "question": "How do you list files in a directory in Node.js?", "answer": "fs.readdir() (or fs.promises.readdir) returns an array of file/directory names; pass { withFileTypes: true } to get Dirent objects distinguishing files from directories.", "code": "const fs = require('fs/promises');\nconst entries = await fs.readdir('./src', { withFileTypes: true });\nentries.forEach(e => console.log(e.name, e.isDirectory()));", "id": 37}, {"category": "File System", "question": "What is the path module used for in Node.js?", "answer": "The path module provides utilities for handling and transforming file paths across operating systems, e.g. joining segments, resolving to absolute paths, and extracting extensions \u2014 avoiding manual, OS-specific string concatenation.", "code": "const path = require('path');\npath.join('/users', 'khan', 'file.txt');   // /users/khan/file.txt\npath.extname('index.html');                // .html\npath.resolve('./data');                    // absolute path", "id": 38}, {"category": "File System", "question": "How do you delete a file or directory in Node.js?", "answer": "fs.unlink() removes a file; fs.rmdir() removes an empty directory; fs.rm() (Node 14.14+) can remove files or, with { recursive: true }, non-empty directories.", "code": "const fs = require('fs/promises');\nawait fs.unlink('temp.txt');\nawait fs.rm('./build', { recursive: true, force: true });", "id": 39}, {"category": "File System", "question": "What is the difference between absolute and relative paths in Node.js file operations?", "answer": "A relative path is resolved against the current working directory (process.cwd()), which can vary depending on where the process was launched \u2014 not the module's own location. An absolute path (or one built with __dirname/path.resolve) always points to the same file regardless of cwd.", "code": "// safer than a bare relative path\nconst filePath = path.join(__dirname, 'data.json');", "id": 40}, {"category": "File System", "question": "How do you watch a file for changes in Node.js?", "answer": "fs.watch() emits events ('change', 'rename') when the watched file or directory is modified, though behavior varies slightly across OSes; fs.watchFile() polls at an interval and is more consistent but less efficient.", "code": "const fs = require('fs');\nfs.watch('config.json', (eventType, filename) => {\n  console.log(`${filename} changed: ${eventType}`);\n});", "id": 41}, {"category": "File System", "question": "What are file descriptors in Node.js and how are they used?", "answer": "A file descriptor is a numeric handle the OS assigns when a file is opened, used internally by low-level fs calls (fs.open, fs.read, fs.write, fs.close) for direct control over reading/writing at specific positions.", "code": "const fs = require('fs');\nfs.open('data.txt', 'r', (err, fd) => {\n  const buffer = Buffer.alloc(100);\n  fs.read(fd, buffer, 0, 100, 0, () => {\n    fs.close(fd, () => {});\n  });\n});", "id": 42}, {"category": "Streams & Buffers", "question": "What are Streams in Node.js and why use them?", "answer": "Streams are objects for reading/writing data incrementally rather than all at once, which keeps memory usage low and lets processing start before the entire dataset is available \u2014 ideal for large files, network data, or piping between sources.", "code": "const fs = require('fs');\nfs.createReadStream('large.mp4').pipe(fs.createWriteStream('copy.mp4'));", "id": 43}, {"category": "Streams & Buffers", "question": "What are the four types of streams in Node.js?", "answer": "Readable (data you can read from, e.g. fs.createReadStream), Writable (data you can write to, e.g. fs.createWriteStream), Duplex (both readable and writable, e.g. a TCP socket), and Transform (a duplex stream that modifies data as it passes through, e.g. zlib.createGzip).", "code": "const { Transform } = require('stream');\nconst upper = new Transform({\n  transform(chunk, enc, cb) {\n    cb(null, chunk.toString().toUpperCase());\n  }\n});", "id": 44}, {"category": "Streams & Buffers", "question": "What is the pipe() method used for in Node.js streams?", "answer": "pipe() connects a readable stream's output directly to a writable stream's input, automatically managing backpressure (pausing the source when the destination's buffer is full) so memory doesn't balloon.", "code": "readableStream.pipe(transformStream).pipe(writableStream);", "id": 45}, {"category": "Streams & Buffers", "question": "What is backpressure in Node.js streams?", "answer": "Backpressure occurs when a writable destination can't consume data as fast as a readable source produces it. write() returns false when the internal buffer is full, signaling the producer to pause until a 'drain' event fires, preventing unbounded memory growth.", "code": "if (!writable.write(chunk)) {\n  readable.pause();\n  writable.once('drain', () => readable.resume());\n}", "id": 46}, {"category": "Streams & Buffers", "question": "What is a Buffer in Node.js?", "answer": "A Buffer is a fixed-size chunk of raw binary data allocated outside the V8 heap, used to handle binary streams (files, network sockets, TCP) since JS strings aren't ideal for binary data.", "code": "const buf = Buffer.from('Hello', 'utf8');\nconsole.log(buf);          // <Buffer 48 65 6c 6c 6f>\nconsole.log(buf.toString()); // Hello", "id": 47}, {"category": "Streams & Buffers", "question": "What is the difference between Buffer.alloc() and Buffer.allocUnsafe()?", "answer": "Buffer.alloc(size) creates a zero-filled buffer, safer but slightly slower. Buffer.allocUnsafe(size) allocates faster but may contain old/leftover memory data, so it must be fully overwritten before use to avoid leaking sensitive data.", "code": "const safe = Buffer.alloc(10);        // all zeros\nconst fast = Buffer.allocUnsafe(10);  // uninitialized, must overwrite", "id": 48}, {"category": "Streams & Buffers", "question": "How do you convert a Buffer to JSON and back?", "answer": "Buffer instances have a toJSON() method producing { type: 'Buffer', data: [...] }; Buffer.from() can reconstruct a buffer from that array or from a JSON string that was parsed back.", "code": "const buf = Buffer.from('hi');\nconst json = JSON.stringify(buf); // {\"type\":\"Buffer\",\"data\":[104,105]}\nconst restored = Buffer.from(JSON.parse(json).data);", "id": 49}, {"category": "Streams & Buffers", "question": "How do you read data from a stream using async iteration?", "answer": "Readable streams implement the async iterator protocol (Node 10+), allowing a for-await-of loop to consume chunks without manually attaching 'data'/'end' listeners.", "code": "const fs = require('fs');\nasync function readIt() {\n  const stream = fs.createReadStream('file.txt', { encoding: 'utf8' });\n  for await (const chunk of stream) {\n    console.log(chunk);\n  }\n}", "id": 50}, {"category": "Streams & Buffers", "question": "What is stream.pipeline() and why is it preferred over manual pipe() chains?", "answer": "pipeline() (from the 'stream' module) chains multiple streams together like pipe() but also properly forwards errors and cleans up/destroys all streams if any stream fails or closes, avoiding resource leaks that plain pipe() chains can cause.", "code": "const { pipeline } = require('stream/promises');\nawait pipeline(\n  fs.createReadStream('in.txt'),\n  zlib.createGzip(),\n  fs.createWriteStream('in.txt.gz')\n);", "id": 51}, {"category": "Streams & Buffers", "question": "How do you create a custom Readable stream in Node.js?", "answer": "Extend stream.Readable and implement _read(), calling this.push(data) to emit chunks and this.push(null) to signal the end of the stream.", "code": "const { Readable } = require('stream');\nclass Counter extends Readable {\n  constructor() { super(); this.i = 0; }\n  _read() {\n    this.i++;\n    if (this.i > 5) return this.push(null);\n    this.push(`${this.i}\\n`);\n  }\n}\nnew Counter().pipe(process.stdout);", "id": 52}, {"category": "HTTP & Networking", "question": "How do you create a basic HTTP server in Node.js?", "answer": "Use the built-in http module's createServer(), passing a request handler that receives (req, res) and writes a response.", "code": "const http = require('http');\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end('Hello World');\n});\nserver.listen(3000, () => console.log('Listening on 3000'));", "id": 53}, {"category": "HTTP & Networking", "question": "How do you handle different HTTP methods and routes without a framework?", "answer": "Inspect req.method and req.url inside the request handler and branch manually, since the raw http module has no built-in router.", "code": "const server = http.createServer((req, res) => {\n  if (req.method === 'GET' && req.url === '/users') {\n    res.end('User list');\n  } else {\n    res.writeHead(404);\n    res.end('Not found');\n  }\n});", "id": 54}, {"category": "HTTP & Networking", "question": "How do you parse the body of an incoming POST request in raw Node.js?", "answer": "The request object is a readable stream, so you collect 'data' chunks into a buffer array and parse them once the 'end' event fires \u2014 there's no built-in body parser in core http.", "code": "let body = [];\nreq.on('data', chunk => body.push(chunk));\nreq.on('end', () => {\n  const parsed = JSON.parse(Buffer.concat(body).toString());\n});", "id": 55}, {"category": "HTTP & Networking", "question": "What is the difference between the http and https modules in Node.js?", "answer": "http handles plain unencrypted requests; https wraps the same API but requires TLS certificate/key options and encrypts traffic, used for secure (HTTPS) servers and requests.", "code": "const https = require('https');\nconst fs = require('fs');\nhttps.createServer({\n  key: fs.readFileSync('key.pem'),\n  cert: fs.readFileSync('cert.pem')\n}, handler).listen(443);", "id": 56}, {"category": "HTTP & Networking", "question": "How do you make an outgoing HTTP request from Node.js?", "answer": "Use the global fetch() (built in since Node 18) for a Promise-based API, or http.request()/https.request() for lower-level stream-based control.", "code": "const res = await fetch('https://api.example.com/data');\nconst json = await res.json();", "id": 57}, {"category": "HTTP & Networking", "question": "What is CORS and how is it handled in Node.js APIs?", "answer": "CORS (Cross-Origin Resource Sharing) is a browser security mechanism restricting cross-origin requests unless the server opts in via response headers like Access-Control-Allow-Origin. In Node, this is set manually or via middleware like the `cors` npm package.", "code": "res.setHeader('Access-Control-Allow-Origin', 'https://myapp.com');\nres.setHeader('Access-Control-Allow-Methods', 'GET,POST');", "id": 58}, {"category": "HTTP & Networking", "question": "How do you create a WebSocket server in Node.js?", "answer": "Node's core http module doesn't include WebSockets; a library like `ws` upgrades an HTTP server connection to a persistent, full-duplex WebSocket connection.", "code": "const { WebSocketServer } = require('ws');\nconst wss = new WebSocketServer({ port: 8080 });\nwss.on('connection', socket => {\n  socket.on('message', msg => socket.send(`echo: ${msg}`));\n});", "id": 59}, {"category": "HTTP & Networking", "question": "What is the net module used for in Node.js?", "answer": "The net module provides an asynchronous API for creating raw TCP servers and clients (stream-based sockets), lower-level than http, useful for custom protocols.", "code": "const net = require('net');\nconst server = net.createServer(socket => {\n  socket.write('Welcome\\n');\n  socket.on('data', data => console.log(data.toString()));\n});\nserver.listen(4000);", "id": 60}, {"category": "HTTP & Networking", "question": "How does Node.js handle HTTP keep-alive connections?", "answer": "By default Node's http.Agent reuses TCP connections across requests when the server/client both support keep-alive, reducing the overhead of repeated TCP/TLS handshakes; configurable via the `agent` option and `keepAlive: true`.", "code": "const http = require('http');\nconst agent = new http.Agent({ keepAlive: true });\nhttp.get('http://example.com', { agent }, res => {});", "id": 61}, {"category": "HTTP & Networking", "question": "What is the purpose of the url module in Node.js?", "answer": "The url module (and the WHATWG URL class) parses and formats URL strings into components (protocol, host, pathname, searchParams) for easier manipulation than manual string parsing.", "code": "const { URL } = require('url');\nconst u = new URL('https://example.com/path?name=khan');\nconsole.log(u.pathname);           // /path\nconsole.log(u.searchParams.get('name')); // khan", "id": 62}, {"category": "Express & Middleware", "question": "What is Express.js and why is it popular?", "answer": "Express is a minimal, unopinionated web framework built on Node's http module, providing convenient routing, middleware support, and request/response helpers \u2014 reducing the boilerplate of building APIs and servers with raw Node.", "code": "const express = require('express');\nconst app = express();\napp.get('/', (req, res) => res.send('Hello'));\napp.listen(3000);", "id": 63}, {"category": "Express & Middleware", "question": "What is middleware in Express.js?", "answer": "Middleware are functions with access to (req, res, next) that execute during the request-response cycle \u2014 they can modify req/res, end the cycle, or call next() to pass control to the next middleware/route handler.", "code": "app.use((req, res, next) => {\n  console.log(`${req.method} ${req.url}`);\n  next();\n});", "id": 64}, {"category": "Express & Middleware", "question": "What is the difference between app.use() and app.get() in Express?", "answer": "app.use() mounts middleware for all HTTP methods on a path (and its sub-paths) or for the whole app if no path given. app.get() registers a handler only for GET requests on an exact route.", "code": "app.use('/api', apiRouter);       // any method under /api\napp.get('/api/users', getUsers);  // GET only, exact route", "id": 65}, {"category": "Express & Middleware", "question": "How do you handle errors in Express.js?", "answer": "Define an error-handling middleware with four parameters (err, req, res, next), placed after all other routes/middleware. Passing an error to next(err) skips remaining regular middleware and jumps straight to it.", "code": "app.use((err, req, res, next) => {\n  console.error(err.stack);\n  res.status(500).json({ error: 'Something broke' });\n});", "id": 66}, {"category": "Express & Middleware", "question": "How do you handle route parameters and query strings in Express?", "answer": "Route parameters (defined with a colon in the path) are available on req.params; query string values are available on req.query.", "code": "app.get('/users/:id', (req, res) => {\n  const { id } = req.params;\n  const { sort } = req.query; // /users/5?sort=asc\n  res.json({ id, sort });\n});", "id": 67}, {"category": "Express & Middleware", "question": "What is express.Router() used for?", "answer": "Router creates a mini, mountable instance of route handlers, letting you modularize routes into separate files/features and mount them on a base path with app.use().", "code": "// userRoutes.js\nconst router = require('express').Router();\nrouter.get('/', listUsers);\nrouter.post('/', createUser);\nmodule.exports = router;\n\n// app.js\napp.use('/users', require('./userRoutes'));", "id": 68}, {"category": "Express & Middleware", "question": "How do you parse JSON request bodies in Express?", "answer": "Use the built-in express.json() middleware (Express 4.16+), which parses JSON payloads and populates req.body, replacing the need for the older body-parser package.", "code": "app.use(express.json());\napp.post('/data', (req, res) => {\n  console.log(req.body); // parsed JSON object\n  res.sendStatus(200);\n});", "id": 69}, {"category": "Express & Middleware", "question": "How do you serve static files in Express?", "answer": "express.static() serves files (HTML, CSS, JS, images) from a given directory directly, without writing individual route handlers for each file.", "code": "app.use(express.static('public'));\n// GET /style.css serves ./public/style.css", "id": 70}, {"category": "Express & Middleware", "question": "What is the significance of calling next() in Express middleware?", "answer": "next() passes control to the subsequent middleware/route handler in the stack. Omitting it (without ending the response) leaves the request hanging; calling next(err) routes to error-handling middleware instead.", "code": "app.use((req, res, next) => {\n  if (!req.headers.authorization) {\n    return next(new Error('Unauthorized'));\n  }\n  next();\n});", "id": 71}, {"category": "Express & Middleware", "question": "How do you implement authentication middleware in Express?", "answer": "Write middleware that verifies a token (e.g. JWT) from the request headers, attaches the decoded user to req, and calls next() on success or responds with 401 on failure; apply it selectively to protected routes.", "code": "function auth(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.sendStatus(401);\n  try {\n    req.user = jwt.verify(token, process.env.JWT_SECRET);\n    next();\n  } catch {\n    res.sendStatus(403);\n  }\n}\napp.get('/profile', auth, getProfile);", "id": 72}, {"category": "Error Handling & Debugging", "question": "How do you handle uncaught exceptions in Node.js?", "answer": "Listen for process.on('uncaughtException'), but treat it only as a last-resort log-and-exit point \u2014 the process is in an undefined state after such an error and should typically restart (e.g. via a process manager) rather than continue.", "code": "process.on('uncaughtException', err => {\n  console.error('Uncaught exception:', err);\n  process.exit(1);\n});", "id": 73}, {"category": "Error Handling & Debugging", "question": "What is the difference between operational errors and programmer errors in Node.js?", "answer": "Operational errors are expected runtime failures in a working system (failed network request, invalid user input, file not found) that should be handled gracefully. Programmer errors are bugs (undefined variable, wrong argument type) that indicate the code itself needs fixing, not graceful recovery.", "code": "// operational: handle it\ntry { await fetch(url); } catch (e) { /* retry or respond 502 */ }\n\n// programmer: fix the bug, don't just catch and ignore", "id": 74}, {"category": "Error Handling & Debugging", "question": "How do you catch unhandled promise rejections in Node.js?", "answer": "Listen for process.on('unhandledRejection'), which fires when a Promise rejects with no .catch() handler attached; since Node 15 this crashes the process by default if unhandled.", "code": "process.on('unhandledRejection', (reason, promise) => {\n  console.error('Unhandled rejection:', reason);\n});", "id": 75}, {"category": "Error Handling & Debugging", "question": "How do you create custom error classes in Node.js?", "answer": "Extend the built-in Error class, calling super(message) and adding custom properties (like a status code or error code) for more structured, identifiable error handling.", "code": "class ValidationError extends Error {\n  constructor(message) {\n    super(message);\n    this.name = 'ValidationError';\n    this.statusCode = 400;\n  }\n}\nthrow new ValidationError('Invalid email');", "id": 76}, {"category": "Error Handling & Debugging", "question": "How do you debug a Node.js application?", "answer": "Run with `node --inspect` (or --inspect-brk to pause on start) and attach Chrome DevTools or an IDE debugger; alternatively use the built-in `debugger` statement with `node inspect`, or console-based logging/tracing.", "code": "$ node --inspect-brk index.js\n// then open chrome://inspect in Chrome", "id": 77}, {"category": "Error Handling & Debugging", "question": "What is the purpose of try/catch with async/await, and how does it differ from .catch()?", "answer": "try/catch wraps awaited code synchronously in style, catching rejections from any awaited expression inside the block in one place \u2014 often more readable than chaining .catch() after every .then() in Promise chains, though both ultimately catch the same rejections.", "code": "async function load() {\n  try {\n    const data = await fetchData();\n    return data;\n  } catch (err) {\n    console.error('Failed to load:', err.message);\n  }\n}", "id": 78}, {"category": "Error Handling & Debugging", "question": "How do you log and monitor errors in a production Node.js app?", "answer": "Use a structured logger (winston, pino) instead of console.log for levels and JSON output, centralize logs (ELK, CloudWatch, Datadog), and integrate an error-tracking service (Sentry, Rollbar) to capture stack traces with context in real time.", "code": "const pino = require('pino')();\npino.error({ err }, 'Request failed');", "id": 79}, {"category": "Error Handling & Debugging", "question": "What tools are available for profiling Node.js application performance?", "answer": "Built-in `node --prof` generates a V8 CPU profile; `clinic.js` offers doctor/flame/bubbleprof visualizations; Chrome DevTools' Performance tab (via --inspect) profiles CPU and memory; `0x` generates flamegraphs from a single command.", "code": "$ node --prof app.js\n$ node --prof-process isolate-*.log > profile.txt", "id": 80}, {"category": "Process, Cluster & OS", "question": "What is the process object in Node.js?", "answer": "process is a global object providing information about, and control over, the current Node.js process \u2014 env variables, argv, exit codes, standard streams, and event hooks like 'exit' and 'uncaughtException'.", "code": "console.log(process.env.NODE_ENV);\nconsole.log(process.pid);\nprocess.exit(0);", "id": 81}, {"category": "Process, Cluster & OS", "question": "How do you read environment variables in Node.js?", "answer": "Environment variables are exposed as string values on process.env; a package like dotenv is commonly used to load a .env file into process.env during local development.", "code": "require('dotenv').config();\nconst dbUrl = process.env.DATABASE_URL;", "id": 82}, {"category": "Process, Cluster & OS", "question": "What is the cluster module used for in Node.js?", "answer": "cluster lets a Node app fork multiple worker processes (typically one per CPU core) that share the same server port, enabling multi-core utilization since a single Node process is single-threaded for JS execution.", "code": "const cluster = require('cluster');\nconst os = require('os');\n\nif (cluster.isPrimary) {\n  os.cpus().forEach(() => cluster.fork());\n} else {\n  require('./server'); // each worker runs the app\n}", "id": 83}, {"category": "Process, Cluster & OS", "question": "What is the difference between the cluster module and worker_threads?", "answer": "cluster spawns separate OS processes (each with its own memory and V8 instance, communicating via IPC) \u2014 good for scaling HTTP servers across cores. worker_threads run in the same process with lighter-weight threads that can share memory via SharedArrayBuffer \u2014 better suited for CPU-bound computation.", "code": "// cluster: multiple processes, one shared port\n// worker_threads: multiple threads, shared process", "id": 84}, {"category": "Process, Cluster & OS", "question": "How do you gracefully shut down a Node.js server?", "answer": "Listen for termination signals (SIGTERM/SIGINT), stop accepting new connections via server.close(), let in-flight requests finish, then close resources like DB connections before calling process.exit().", "code": "process.on('SIGTERM', () => {\n  server.close(() => {\n    db.disconnect().then(() => process.exit(0));\n  });\n});", "id": 85}, {"category": "Process, Cluster & OS", "question": "What is the os module used for in Node.js?", "answer": "The os module provides operating-system-related utility methods and properties: CPU info, free/total memory, platform, hostname, uptime, and network interfaces.", "code": "const os = require('os');\nconsole.log(os.cpus().length);   // number of logical cores\nconsole.log(os.freemem());        // bytes free\nconsole.log(os.platform());       // 'linux', 'darwin', 'win32'", "id": 86}, {"category": "Process, Cluster & OS", "question": "How does Node.js manage memory, and what is a memory leak?", "answer": "V8 manages memory via generational garbage collection, automatically freeing objects with no remaining references. A memory leak happens when references are unintentionally retained (forgotten timers, growing caches, detached closures), preventing GC from reclaiming memory, causing usage to grow over time.", "code": "// leak example: interval never cleared, closure keeps growing array alive\nsetInterval(() => { bigArray.push(new Array(1e6)); }, 100);", "id": 87}, {"category": "Process, Cluster & OS", "question": "What is PM2 and why is it used with Node.js applications?", "answer": "PM2 is a production process manager for Node apps that provides clustering, automatic restarts on crash, zero-downtime reloads, log management, and monitoring \u2014 handling operational concerns beyond what `node app.js` provides alone.", "code": "$ pm2 start app.js -i max   // cluster mode, one worker per CPU\n$ pm2 logs\n$ pm2 restart app", "id": 88}, {"category": "Security & Performance", "question": "How do you prevent SQL/NoSQL injection in a Node.js application?", "answer": "Never concatenate raw user input into queries. Use parameterized queries / prepared statements (SQL) or an ORM/query builder, and for NoSQL (e.g. MongoDB) sanitize input and avoid passing raw user objects directly into query operators.", "code": "// safe, parameterized\ndb.query('SELECT * FROM users WHERE email = ?', [email]);\n\n// unsafe\ndb.query(`SELECT * FROM users WHERE email = '${email}'`);", "id": 89}, {"category": "Security & Performance", "question": "How do you securely store passwords in Node.js?", "answer": "Never store plaintext passwords. Hash with a slow, salted algorithm like bcrypt or argon2 (not fast general hashes like MD5/SHA1), and compare using the library's constant-time compare function.", "code": "const bcrypt = require('bcrypt');\nconst hash = await bcrypt.hash(password, 10);\nconst match = await bcrypt.compare(inputPassword, hash);", "id": 90}, {"category": "Security & Performance", "question": "What is helmet.js and what does it do?", "answer": "helmet is Express middleware that sets a collection of security-related HTTP headers (Content-Security-Policy, X-Frame-Options, Strict-Transport-Security, etc.) to reduce common web vulnerabilities with minimal setup.", "code": "const helmet = require('helmet');\napp.use(helmet());", "id": 91}, {"category": "Security & Performance", "question": "How do you implement rate limiting in a Node.js API?", "answer": "Use middleware like express-rate-limit to cap the number of requests a client can make in a time window, mitigating brute-force and abuse; for distributed deployments back the store with Redis rather than in-memory.", "code": "const rateLimit = require('express-rate-limit');\napp.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));", "id": 92}, {"category": "Security & Performance", "question": "What environment variables/practices help secure a Node.js app in production?", "answer": "Set NODE_ENV=production (disables verbose error stacks, enables framework optimizations), never commit secrets (use a vault or .env excluded from git), enable HTTPS/TLS, validate all input, and keep dependencies patched (npm audit).", "code": "NODE_ENV=production node app.js\n$ npm audit fix", "id": 93}, {"category": "Security & Performance", "question": "How can you improve Node.js application performance?", "answer": "Use clustering/worker threads to use all CPU cores, cache expensive computations/queries (Redis, in-memory LRU), use streaming instead of buffering large payloads, avoid blocking sync calls, enable gzip/br compression, and profile before optimizing rather than guessing.", "code": "const compression = require('compression');\napp.use(compression()); // gzip/br response bodies", "id": 94}, {"category": "Security & Performance", "question": "What is the purpose of npm audit and how do you use it?", "answer": "npm audit scans installed dependencies against known vulnerability databases and reports severity/affected packages; `npm audit fix` attempts automatic upgrades to patched versions where semver allows.", "code": "$ npm audit\n$ npm audit fix\n$ npm audit fix --force  // may include breaking major bumps, use with caution", "id": 95}, {"category": "Testing", "question": "How do you write unit tests for a Node.js application?", "answer": "Use a test framework (Jest, Mocha+Chai, or Node's built-in `node:test`) to define test cases that assert expected behavior of individual functions/modules in isolation, often mocking external dependencies.", "code": "// using Node's built-in test runner\nconst { test } = require('node:test');\nconst assert = require('assert');\n\ntest('adds numbers', () => {\n  assert.strictEqual(1 + 2, 3);\n});", "id": 96}, {"category": "Testing", "question": "What is the difference between unit tests, integration tests, and end-to-end tests?", "answer": "Unit tests verify a single function/module in isolation (dependencies mocked). Integration tests verify multiple units work together (e.g. a route handler with a real test database). End-to-end tests verify the whole system behaves correctly from a user's perspective, often through the actual API/UI.", "code": "// unit: test calculateTotal() alone\n// integration: POST /orders hits a real test DB\n// e2e: simulate a full checkout flow via HTTP/browser", "id": 97}, {"category": "Testing", "question": "How do you mock a module or function in Node.js tests?", "answer": "Testing libraries like Jest provide jest.mock()/jest.fn() to replace a module or function with a controllable fake, letting you assert calls and control return values without invoking the real implementation (e.g. a real network call).", "code": "jest.mock('../db');\nconst db = require('../db');\ndb.getUser.mockResolvedValue({ id: 1, name: 'Khan' });", "id": 98}, {"category": "Testing", "question": "How do you test an Express API endpoint?", "answer": "Use a library like supertest to make in-process HTTP requests against the Express app instance and assert on status codes and response bodies, without needing to actually bind a port.", "code": "const request = require('supertest');\nconst app = require('../app');\n\ntest('GET /users returns 200', async () => {\n  const res = await request(app).get('/users');\n  expect(res.statusCode).toBe(200);\n});", "id": 99}, {"category": "Testing", "question": "What is code coverage and how do you measure it in a Node.js project?", "answer": "Code coverage measures what percentage of your source code is executed by your test suite (statements, branches, functions, lines), highlighting untested paths. Tools like Istanbul/nyc or Jest's built-in `--coverage` flag generate coverage reports.", "code": "$ jest --coverage\n# outputs a table + HTML report under /coverage", "id": 100}]
+</script>
+<script>
+(function(){
+  const data = JSON.parse(document.getElementById('qdata').textContent);
+  const listEl = document.getElementById('list');
+  const filterRow = document.getElementById('filterRow');
+  const searchInput = document.getElementById('searchInput');
+  const resultCount = document.getElementById('resultCount');
+  const emptyState = document.getElementById('emptyState');
+  const bookmarkToggle = document.getElementById('bookmarkToggle');
+  const bookmarkCountEl = document.getElementById('bookmarkCount');
+  const catCountEl = document.getElementById('catCount');
+  const totalCountEl = document.getElementById('totalCount');
+
+  const STORAGE_KEY = 'nodejs-interview-bookmarks';
+  let bookmarks = new Set();
+  try {
+    bookmarks = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+  } catch(e) { bookmarks = new Set(); }
+
+  let activeCategory = 'All';
+  let bookmarkOnly = false;
+  let searchTerm = '';
+  let openCards = new Set();
+
+  const categories = [...new Set(data.map(d => d.category))];
+  totalCountEl.textContent = data.length;
+  catCountEl.textContent = categories.length;
+
+  function saveBookmarks(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...bookmarks]));
+    bookmarkCountEl.textContent = bookmarks.size;
+  }
+
+  function renderPills(){
+    const counts = {};
+    categories.forEach(c => counts[c] = data.filter(d => d.category === c).length);
+    let html = `<button class="pill ${activeCategory==='All'?'active':''}" data-cat="All">All <span class="count">${data.length}</span></button>`;
+    categories.forEach(c => {
+      html += `<button class="pill ${activeCategory===c?'active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)} <span class="count">${counts[c]}</span></button>`;
+    });
+    filterRow.innerHTML = html;
+    filterRow.querySelectorAll('.pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.getAttribute('data-cat');
+        render();
+      });
+    });
+  }
+
+  function escapeHtml(str){
+    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function highlight(text, term){
+    if(!term) return escapeHtml(text);
+    const escaped = escapeHtml(text);
+    const escTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try {
+      return escaped.replace(new RegExp('('+escTerm+')', 'ig'), '<mark style="background:rgba(45,212,191,0.25);color:#7ee8db;border-radius:2px;">$1</mark>');
+    } catch(e) { return escaped; }
+  }
+
+  function matchesSearch(item, term){
+    if(!term) return true;
+    const t = term.toLowerCase();
+    return item.question.toLowerCase().includes(t) ||
+           item.answer.toLowerCase().includes(t) ||
+           item.code.toLowerCase().includes(t) ||
+           item.category.toLowerCase().includes(t);
+  }
+
+  function render(){
+    let filtered = data.filter(d => {
+      if(activeCategory !== 'All' && d.category !== activeCategory) return false;
+      if(bookmarkOnly && !bookmarks.has(d.id)) return false;
+      if(!matchesSearch(d, searchTerm)) return false;
+      return true;
+    });
+
+    resultCount.textContent = `Showing ${filtered.length} of ${data.length}`;
+    renderPills();
+
+    if(filtered.length === 0){
+      listEl.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+
+    listEl.innerHTML = filtered.map((item, idx) => {
+      const isOpen = openCards.has(item.id);
+      const isBookmarked = bookmarks.has(item.id);
+      return `
+      <div class="card ${isOpen?'open':''}" data-id="${item.id}">
+        <div class="card-head" data-toggle="${item.id}">
+          <div class="q-index">${String(item.id).padStart(3,'0')}</div>
+          <div class="q-main">
+            <div class="q-cat">${escapeHtml(item.category)}</div>
+            <div class="q-text">${highlight(item.question, searchTerm)}</div>
+          </div>
+          <div class="q-actions">
+            <button class="bookmark-btn ${isBookmarked?'active':''}" data-bookmark="${item.id}" title="Bookmark">
+              <svg viewBox="0 0 24 24" fill="${isBookmarked?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"></path></svg>
+            </button>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-body-inner">
+            <div class="answer">${highlight(item.answer, searchTerm)}</div>
+            ${item.code ? `<div class="code-label">Example</div><div class="code-block"><pre>${escapeHtml(item.code)}</pre></div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    listEl.querySelectorAll('[data-toggle]').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = parseInt(el.getAttribute('data-toggle'));
+        const card = listEl.querySelector(`.card[data-id="${id}"]`);
+        if(openCards.has(id)){
+          openCards.delete(id);
+          card.classList.remove('open');
+        } else {
+          openCards.add(id);
+          card.classList.add('open');
+        }
+      });
+    });
+
+    listEl.querySelectorAll('[data-bookmark]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(el.getAttribute('data-bookmark'));
+        if(bookmarks.has(id)) bookmarks.delete(id);
+        else bookmarks.add(id);
+        saveBookmarks();
+        render();
+      });
+    });
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    searchTerm = e.target.value.trim();
+    render();
+  });
+
+  bookmarkToggle.addEventListener('click', () => {
+    bookmarkOnly = !bookmarkOnly;
+    bookmarkToggle.classList.toggle('active');
+    bookmarkToggle.style.color = bookmarkOnly ? 'var(--accent-amber)' : '';
+    render();
+  });
+
+  bookmarkCountEl.textContent = bookmarks.size;
+  render();
+})();
+</script>
+</body>
+</html>
